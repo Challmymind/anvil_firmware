@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 
-#define KEYBOARD_REPORT_SIZE 8
+#define KEYBOARD_REPORT_SIZE 32
 
 enum LAYOUT_PAGE{
 		MAIN_LAYOUT,
