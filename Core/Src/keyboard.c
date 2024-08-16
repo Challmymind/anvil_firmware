@@ -13,13 +13,18 @@
 extern USBD_HandleTypeDef hUsbDeviceFS;
 
 
-uint_fast8_t LAYOUTS[1][3][10] =
+uint_fast8_t LAYOUTS[2][3][10] =
 {
 
 		{
 				{0x14, 0x1a, 0x08, 0x15, 0x17, 0x1c, 0x18, 0x0c, 0x12, 0x13},
 				{0x04, 0x16, 0x07, 0x09, 0x0a, 0x0b, 0x0d, 0x0e, 0x0f, 0x00},
 				{0x1d, 0x1b, 0x06, 0x19, 0x2c, 0x05, 0x11, 0x10, 0x00, 0x28}
+		},
+		{
+				{0x29, 0x00, 0x14, 0x1a, 0x08, 0x15, 0x00, 0x00, 0x00, 0x00},
+				{0x00, 0x00, 0x04, 0x16, 0x07, 0x09, 0x0a, 0x00, 0x00, 0x00},
+				{0x00, 0x00, 0x00, 0x00, 0x2c, 0x2c, 0x00, 0x00, 0x00, 0x28}
 		}
 
 };
@@ -132,24 +137,31 @@ void keybord_loop(){
 
 		uint_fast8_t m = 0;
 		memset(keybord_report,0,sizeof(keybord_report));
-//		switch (current_layout){
-//		case MAIN_LAYOUT:
-//			if(STATUS[1][0] || STATUS[0][8]){
-//
-//			}
-//			break;
-//
-//		}
+		switch (current_layout){
+		case MAIN_LAYOUT:
+			if(STATUS[1][0] || STATUS[0][1]){
+				if(STATUS[1][0] < STATUS[0][1]){
+					current_layout = GAME_LAYOUT;
+					break;
+				}
+			}
+		case GAME_LAYOUT:
+			if(STATUS[2][0]){
+				current_layout=MAIN_LAYOUT;
+			}
+			break;
+		}
 		while(m < 3){
 			uint_fast8_t n = 0;
 			while(n < 10){
 				if(STATUS[m][n])
 					keybord_report[STATUS[m][n]] = LAYOUTS[current_layout][2-m][9-n];
+
 				n++;
 			}
 			m++;
 		}
-
+		if(current_layout == GAME_LAYOUT && (STATUS[1][9]&&STATUS[1][8])) keybord_report[0] = 2;
 		USBD_HID_SendReport(&hUsbDeviceFS, keybord_report, KEYBOARD_REPORT_SIZE);
 		HAL_Delay(10);
 

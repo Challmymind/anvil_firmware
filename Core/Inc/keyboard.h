@@ -14,8 +14,7 @@
 
 enum LAYOUT_PAGE{
 		MAIN_LAYOUT,
-		SECOND_LAYOUT,
-		THIRD_LAYOUT
+		GAME_LAYOUT
 };
 
 void keybord_loop();
